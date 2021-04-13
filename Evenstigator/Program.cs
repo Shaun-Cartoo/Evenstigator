@@ -12,14 +12,22 @@ namespace Evenstigator
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
-        static void Main()
+        static void Main(string[] args)
         {
-            ServiceBase[] ServicesToRun;
-            ServicesToRun = new ServiceBase[]
+            Evenstigator service = new Evenstigator();
+            if (Environment.UserInteractive)
             {
-                new Evenstigator()
-            };
-            ServiceBase.Run(ServicesToRun);
+                service.RunAsConsole(args);
+            }
+            else
+            {
+                ServiceBase[] ServicesToRun;
+                ServicesToRun = new ServiceBase[]
+                {
+                    new Evenstigator()
+                };
+                ServiceBase.Run(ServicesToRun);
+            }
         }
     }
 }

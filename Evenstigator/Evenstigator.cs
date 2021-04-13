@@ -35,9 +35,18 @@ namespace Evenstigator
             _eventLog.Log = _log;
         }
 
+        public void RunAsConsole(string[] args)
+        {
+            OnStart(args);
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadLine();
+            OnStop();
+        }
+
         protected override void OnStart(string[] args)
         {
             _eventLog.WriteEntry("Evenstigator service has started...");
+            MyTraceProcessor.Init(args);
         }
         protected override void OnPause()
         {
