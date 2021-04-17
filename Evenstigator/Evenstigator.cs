@@ -16,15 +16,13 @@ namespace Evenstigator
         private EventLog _eventLog;
         private string _src = ConfigurationManager.AppSettings["src"];
         private string _log = ConfigurationManager.AppSettings["log"];
+        private string _etlName = ConfigurationManager.AppSettings["etlName"];
+        private string _etlPath = ConfigurationManager.AppSettings["etlPath"];
+
         public Evenstigator()
         {
             InitializeComponent();
             _eventLog = new EventLog();
-
-            //if (args.Length > 0)
-            //    _src = args[0];
-            //if (args.Length > 1)
-            //    _log = args[1];
 
             if(!EventLog.SourceExists(_src))
             {
@@ -45,8 +43,8 @@ namespace Evenstigator
 
         protected override void OnStart(string[] args)
         {
-            _eventLog.WriteEntry("Evenstigator service has started...");
-            MyTraceProcessor.Init(args);
+            _eventLog.WriteEntry("Evenstigator service has started...etl being read from location "+_etlPath);
+            MyTraceProcessor.Init(_etlPath, _etlName);
         }
         protected override void OnPause()
         {
