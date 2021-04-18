@@ -15,24 +15,31 @@ namespace Evenstigator
         private static string _etlFilePath;
         static public void Init(string etlFilePath, string etlFileName) 
         {
-            _etlFilePath = etlFilePath;
-            //_etlFileName = etlFileName;
-            _watcher = new FileSystemWatcher(_etlFilePath);
-            
-            _watcher.NotifyFilter = NotifyFilters.Attributes
-                                | NotifyFilters.CreationTime
-                                | NotifyFilters.DirectoryName
-                                | NotifyFilters.FileName
-                                | NotifyFilters.LastAccess
-                                | NotifyFilters.LastWrite
-                                | NotifyFilters.Security
-                                | NotifyFilters.Size;
+            try
+            {
+                _etlFilePath = etlFilePath;
+                //_etlFileName = etlFileName;
+                _watcher = new FileSystemWatcher(_etlFilePath);
 
-            _watcher.Changed += OnChanged;
-            _watcher.Created += OnCreated;
-            _watcher.Filter = "*"+_fileExt;
-            _watcher.IncludeSubdirectories = true;
-            _watcher.EnableRaisingEvents = true;
+                _watcher.NotifyFilter = NotifyFilters.Attributes
+                                    | NotifyFilters.CreationTime
+                                    | NotifyFilters.DirectoryName
+                                    | NotifyFilters.FileName
+                                    | NotifyFilters.LastAccess
+                                    | NotifyFilters.LastWrite
+                                    | NotifyFilters.Security
+                                    | NotifyFilters.Size;
+
+                _watcher.Changed += OnChanged;
+                _watcher.Created += OnCreated;
+                _watcher.Filter = "*" + _fileExt;
+                _watcher.IncludeSubdirectories = true;
+                _watcher.EnableRaisingEvents = true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         private static void OnChanged(object sender, FileSystemEventArgs e)
         {
