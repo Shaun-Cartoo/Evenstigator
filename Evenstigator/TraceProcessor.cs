@@ -3,6 +3,8 @@ using Microsoft.Windows.EventTracing.Processes;
 using log4net;
 using System;
 using System.IO;
+using System.Collections.Generic;
+using Microsoft.Windows.EventTracing.Syscalls;
 
 namespace Evenstigator
 {
@@ -18,7 +20,6 @@ namespace Evenstigator
             _etlFilePath = etlFilePath;
             //_etlFileName = etlFileName;
             _watcher = new FileSystemWatcher(_etlFilePath);
-            
             _watcher.NotifyFilter = NotifyFilters.Attributes
                                 | NotifyFilters.CreationTime
                                 | NotifyFilters.DirectoryName
@@ -30,7 +31,7 @@ namespace Evenstigator
 
             _watcher.Changed += OnChanged;
             _watcher.Created += OnCreated;
-            _watcher.Filter = "*"+_fileExt;
+            _watcher.Filter = "*" + _fileExt;
             _watcher.IncludeSubdirectories = true;
             _watcher.EnableRaisingEvents = true;
         }
@@ -40,13 +41,13 @@ namespace Evenstigator
             {
                 return;
             }
-            Console.WriteLine($"ETL file located at : {e.FullPath} has changed.");
+            //Console.WriteLine($"ETL file located at : {e.FullPath} has changed.");
             Process(e.FullPath);
         }
         private static void OnCreated(object sender, FileSystemEventArgs e)
         {
-            string value = $"Created: {e.FullPath}";
-            Console.WriteLine($"ETL file located at : {e.FullPath} has been created.");
+            //string value = $"Created: {e.FullPath}";
+            //Console.WriteLine($"ETL file located at : {e.FullPath} has been created.");
             Process(e.FullPath);
         }
 
@@ -70,7 +71,7 @@ namespace Evenstigator
 
                     foreach (IProcess process in processData.Processes)
                     {
-                        log.Info(process.CommandLine);
+                        Console.WriteLine(process.CommandLine);
                     }
                 }
             }

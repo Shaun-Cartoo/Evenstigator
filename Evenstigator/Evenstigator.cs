@@ -40,18 +40,11 @@ namespace Evenstigator
             Console.ReadLine();
             OnStop();
         }
-        public new void Dispose()
-        {
-            // Dispose of unmanaged resources.
-            Dispose(true);
-            // Suppress finalization.
-            GC.SuppressFinalize(this);
-        }
-
         protected override void OnStart(string[] args)
         {
             _eventLog.WriteEntry("Evenstigator service has started...etl being read from location "+_etlPath);
             MyTraceProcessor.Init(_etlPath, _etlName);
+            Dispose();
         }
         protected override void OnPause()
         {
@@ -62,6 +55,13 @@ namespace Evenstigator
         {
             _eventLog.WriteEntry("Evenstigator service has stopped...");
             Dispose();
+        }
+        public new void Dispose()
+        {
+            // Dispose of unmanaged resources.
+            Dispose(true);
+            // Suppress finalization.
+            GC.SuppressFinalize(this);
         }
     }
 }
