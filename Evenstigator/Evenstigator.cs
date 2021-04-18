@@ -40,6 +40,13 @@ namespace Evenstigator
             Console.ReadLine();
             OnStop();
         }
+        public new void Dispose()
+        {
+            // Dispose of unmanaged resources.
+            Dispose(true);
+            // Suppress finalization.
+            GC.SuppressFinalize(this);
+        }
 
         protected override void OnStart(string[] args)
         {
@@ -54,6 +61,7 @@ namespace Evenstigator
         protected override void OnStop()
         {
             _eventLog.WriteEntry("Evenstigator service has stopped...");
+            Dispose();
         }
     }
 }
