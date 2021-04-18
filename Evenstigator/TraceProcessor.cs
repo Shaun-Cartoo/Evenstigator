@@ -36,18 +36,32 @@ namespace Evenstigator
         }
         private static void OnChanged(object sender, FileSystemEventArgs e)
         {
-            if (e.ChangeType != WatcherChangeTypes.Changed)
+            try
             {
-                return;
+                if (e.ChangeType != WatcherChangeTypes.Changed)
+                {
+                    return;
+                }
+                //Console.WriteLine($"ETL file located at : {e.FullPath} has changed.");
+                Process(e.FullPath);
             }
-            Console.WriteLine($"ETL file located at : {e.FullPath} has changed.");
-            Process(e.FullPath);
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         private static void OnCreated(object sender, FileSystemEventArgs e)
         {
-            string value = $"Created: {e.FullPath}";
-            Console.WriteLine($"ETL file located at : {e.FullPath} has been created.");
-            Process(e.FullPath);
+            try
+            {
+                //string value = $"Created: {e.FullPath}";
+                //Console.WriteLine($"ETL file located at : {e.FullPath} has been created.");
+                Process(e.FullPath);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         private static void Process(string path)
@@ -77,6 +91,7 @@ namespace Evenstigator
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occured while processing. {ex}");
+                throw ex;
             }
         }
     }
