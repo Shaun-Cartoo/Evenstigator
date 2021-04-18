@@ -42,9 +42,16 @@ namespace Evenstigator
         }
         protected override void OnStart(string[] args)
         {
-            _eventLog.WriteEntry("Evenstigator service has started...etl being read from location "+_etlPath);
-            MyTraceProcessor.Init(_etlPath, _etlName);
-            Dispose();
+            try
+            {
+                _eventLog.WriteEntry($"Evenstigator service has started...etl being read from location {_etlPath}");
+                MyTraceProcessor.Init(_etlPath, _etlName);
+                Dispose();
+            }
+            catch (Exception ex)
+            {
+                _eventLog.WriteEntry($"The following error occured: {ex}");
+            }
         }
         protected override void OnPause()
         {
