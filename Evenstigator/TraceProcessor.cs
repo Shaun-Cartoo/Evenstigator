@@ -9,33 +9,30 @@ namespace Evenstigator
     static class MyTraceProcessor
     {
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static FileSystemWatcher _watcher;
         private static readonly string _fileExt = ".etl";
         private static string _etlFileName;
         private static string _etlFilePath;
         static public void Init(string etlFilePath, string etlFileName) 
         {
             _etlFilePath = etlFilePath;
-            _etlFileName = etlFileName;
+            //_etlFileName = etlFileName;
+            _watcher = new FileSystemWatcher(_etlFilePath);
+            
+            _watcher.NotifyFilter = NotifyFilters.Attributes
+                                | NotifyFilters.CreationTime
+                                | NotifyFilters.DirectoryName
+                                | NotifyFilters.FileName
+                                | NotifyFilters.LastAccess
+                                | NotifyFilters.LastWrite
+                                | NotifyFilters.Security
+                                | NotifyFilters.Size;
 
-            Process();
-
-            using (var watcher = new FileSystemWatcher(_etlFilePath))
-            {
-                watcher.NotifyFilter = NotifyFilters.Attributes
-                                 | NotifyFilters.CreationTime
-                                 | NotifyFilters.DirectoryName
-                                 | NotifyFilters.FileName
-                                 | NotifyFilters.LastAccess
-                                 | NotifyFilters.LastWrite
-                                 | NotifyFilters.Security
-                                 | NotifyFilters.Size;
-
-                watcher.Changed += OnChanged;
-                watcher.Created += OnCreated;
-                watcher.Filter = "*"+_fileExt;
-                watcher.IncludeSubdirectories = true;
-                watcher.EnableRaisingEvents = true;
-            }
+            _watcher.Changed += OnChanged;
+            _watcher.Created += OnCreated;
+            _watcher.Filter = "*"+_fileExt;
+            _watcher.IncludeSubdirectories = true;
+            _watcher.EnableRaisingEvents = true;
         }
         private static void OnChanged(object sender, FileSystemEventArgs e)
         {
@@ -44,35 +41,42 @@ namespace Evenstigator
                 return;
             }
             Console.WriteLine($"ETL file located at : {e.FullPath} has changed.");
-            Process();
+            Process(e.FullPath);
         }
         private static void OnCreated(object sender, FileSystemEventArgs e)
         {
             string value = $"Created: {e.FullPath}";
-            Console.WriteLine(value);
-            Process();
+            Console.WriteLine($"ETL file located at : {e.FullPath} has been created.");
+            Process(e.FullPath);
         }
 
-        static public void Process()
+        private static void Process(string path)
         {
-            if (string.IsNullOrEmpty(_etlFileName))
+            try
             {
-                Console.Error.WriteLine("ETL file name not provided...");
-                return;
-            }
-
-            using (ITraceProcessor trace = TraceProcessor.Create(_etlFilePath+""+_etlFileName+""+_fileExt))
-            {
-                IPendingResult<IProcessDataSource> pendingProcessData = trace.UseProcesses();
-
-                trace.Process();
-
-                IProcessDataSource processData = pendingProcessData.Result;
-
-                foreach (IProcess process in processData.Processes)
+                if (string.IsNullOrEmpty(path))
                 {
-                    log.Info(process.CommandLine);
+                    Console.Error.WriteLine("ETL file name not provided...");
+                    return;
                 }
+
+                using (ITraceProcessor trace = TraceProcessor.Create(path))
+                {
+                    IPendingResult<IProcessDataSource> pendingProcessData = trace.UseProcesses();
+
+                    trace.Process();
+
+                    IProcessDataSource processData = pendingProcessData.Result;
+
+                    foreach (IProcess process in processData.Processes)
+                    {
+                        log.Info(process.CommandLine);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occured while processing. {ex}");
             }
         }
     }
