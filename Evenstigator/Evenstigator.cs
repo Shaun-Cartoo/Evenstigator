@@ -22,7 +22,7 @@ namespace Evenstigator
         public Evenstigator()
         {
             InitializeComponent();
-            _eventLog = new EventLog();
+            _eventLog = EventLog;
 
             if(!EventLog.SourceExists(_src))
             {
@@ -32,7 +32,6 @@ namespace Evenstigator
             _eventLog.Source = _src;
             _eventLog.Log = _log;
         }
-
         public void RunAsConsole(string[] args)
         {
             OnStart(args);
@@ -40,14 +39,6 @@ namespace Evenstigator
             Console.ReadLine();
             OnStop();
         }
-        public new void Dispose()
-        {
-            // Dispose of unmanaged resources.
-            Dispose(true);
-            // Suppress finalization.
-            GC.SuppressFinalize(this);
-        }
-
         protected override void OnStart(string[] args)
         {
             try
@@ -59,23 +50,21 @@ namespace Evenstigator
             {
                 _eventLog.WriteEntry($"An error occured - {ex}");
             }
+            finally
+            {
+                Dispose();
+            }
         }
         protected override void OnPause()
         {
             base.OnPause();
             _eventLog.WriteEntry("Evenstigator service has been paused...");
+            Dispose();
         }
         protected override void OnStop()
-        {
-            try
-            {
-                _eventLog.WriteEntry("Evenstigator service has stopped...");
-                Dispose();
-            }
-            catch (Exception ex)
-            {
-                _eventLog.WriteEntry($"En error occured - {ex}");
-            }
+        {   
+            _eventLog.WriteEntry("Evenstigator service has stopped...");
+            Dispose();
         }
     }
 }

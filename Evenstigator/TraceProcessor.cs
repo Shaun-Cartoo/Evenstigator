@@ -42,7 +42,7 @@ namespace Evenstigator
                 {
                     return;
                 }
-                //Console.WriteLine($"ETL file located at : {e.FullPath} has changed.");
+                
                 Process(e.FullPath);
             }
             catch (Exception ex)
@@ -54,8 +54,6 @@ namespace Evenstigator
         {
             try
             {
-                //string value = $"Created: {e.FullPath}";
-                //Console.WriteLine($"ETL file located at : {e.FullPath} has been created.");
                 Process(e.FullPath);
             }
             catch (Exception ex)
@@ -70,7 +68,7 @@ namespace Evenstigator
             {
                 if (string.IsNullOrEmpty(path))
                 {
-                    Console.Error.WriteLine("ETL file name not provided...");
+                    Console.Error.WriteLine("ETL file location not provided...");
                     return;
                 }
 
